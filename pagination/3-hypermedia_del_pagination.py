@@ -31,8 +31,10 @@ class Server:
         """
         if self.__indexed_dataset is None:
             dataset = self.dataset()
-            # Create a dict where key=index, value=row
-            self.__indexed_dataset = {i: dataset[i] for i in range(len(dataset))}
+            # Create dict: key=index, value=row
+            self.__indexed_dataset = {
+                i: dataset[i] for i in range(len(dataset))
+            }
         return self.__indexed_dataset
 
     def get_hyper_index(self, index: int = 0, page_size: int = 10) -> Dict:
@@ -52,15 +54,16 @@ class Server:
                 'data': list of dataset rows for the page
             }
         """
-        assert isinstance(index, int) and 0 <= index < len(self.indexed_dataset()), \
-            "index out of range"
+        assert isinstance(index, int) and 0 <= index < len(
+            self.indexed_dataset()
+        ), "index out of range"
 
         indexed_data = self.indexed_dataset()
         data = []
         current_index = index
         collected = 0
 
-        # Keep collecting until we have page_size items or run out of data
+        # Collect until page_size items or end of data
         while collected < page_size and current_index < len(indexed_data):
             if current_index in indexed_data:
                 data.append(indexed_data[current_index])
