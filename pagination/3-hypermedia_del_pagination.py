@@ -20,7 +20,7 @@ class Server:
         """Cached dataset
         """
         if self.__dataset is None:
-            with open(self.DATA_FILE, newline="", encoding="utf-8") as f:
+            with open(self.DATA_FILE, newline='', encoding='utf-8') as f:
                 reader = csv.reader(f)
                 dataset = [row for row in reader]
             self.__dataset = dataset[1:]  # skip header
@@ -31,7 +31,6 @@ class Server:
         """
         if self.__indexed_dataset is None:
             dataset = self.dataset()
-            # Create dict: key=index, value=row
             self.__indexed_dataset = {
                 i: dataset[i] for i in range(len(dataset))
             }
@@ -49,9 +48,9 @@ class Server:
         Returns:
             dict: {
                 'index': current start index,
-                'next_index': next start index to query,
+                'data': list of dataset rows for the page,
                 'page_size': size of returned data,
-                'data': list of dataset rows for the page
+                'next_index': next start index to query
             }
         """
         assert isinstance(index, int) and 0 <= index < len(
@@ -62,9 +61,9 @@ class Server:
         data = []
         current_index = index
         collected = 0
+        max_index = max(indexed_data.keys())
 
-        # Collect until page_size items or end of data
-        while collected < page_size and current_index < len(indexed_data):
+        while collected < page_size and current_index <= max_index:
             if current_index in indexed_data:
                 data.append(indexed_data[current_index])
                 collected += 1
@@ -72,7 +71,7 @@ class Server:
 
         return {
             "index": index,
-            "next_index": current_index,
+            "data": data,
             "page_size": len(data),
-            "data": data
+            "next_index": current_index
         }
