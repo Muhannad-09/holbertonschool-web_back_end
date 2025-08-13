@@ -4,6 +4,7 @@ Deletion-resilient hypermedia pagination
 """
 
 import csv
+import math
 from typing import List, Dict
 
 
@@ -20,10 +21,11 @@ class Server:
         """Cached dataset
         """
         if self.__dataset is None:
-            with open(self.DATA_FILE, newline='', encoding='utf-8') as f:
+            with open(self.DATA_FILE) as f:
                 reader = csv.reader(f)
                 dataset = [row for row in reader]
-            self.__dataset = dataset[1:]  # skip header
+            self.__dataset = dataset[1:]
+
         return self.__dataset
 
     def indexed_dataset(self) -> Dict[int, List]:
@@ -31,47 +33,40 @@ class Server:
         """
         if self.__indexed_dataset is None:
             dataset = self.dataset()
+            truncated_dataset = dataset[:1000]
             self.__indexed_dataset = {
                 i: dataset[i] for i in range(len(dataset))
             }
         return self.__indexed_dataset
 
-    def get_hyper_index(self, index: int = 0, page_size: int = 10) -> Dict:
-        """
-        Return a dictionary containing the page of data indexed by position,
-        resilient to deletions in the dataset.
+    def get_hyper_index(self, index: int = None, page_size: int = 10) -> Dict:
+        """ Deletion-resilient hypermedia pagination """
 
-        Args:
-            index (int): The start index of the page (default 0)
-            page_size (int): The number of items on the page (default 10)
+        idx_dataset = self.indexed_dataset()
 
-        Returns:
-            dict: {
-                'index': current start index,
-                'data': list of dataset rows for the page,
-                'page_size': size of returned data,
-                'next_index': next start index to query
-            }
-        """
-        assert isinstance(index, int) and 0 <= index < len(
-            self.indexed_dataset()
-        ), "index out of range"
+        assert isinstance(index, int) and index < (len(idx_dataset) - 1)
 
-        indexed_data = self.indexed_dataset()
-        data = []
-        current_index = index
-        collected = 0
-        max_index = max(indexed_data.keys())
+        i, mv, data = 0, index, []
+        while (i < page_size and index < len(idx_dataset)):
+            value = idx_dataset.get(mv, None)
+            if value:
+                data.append(value)
+                i += 1
+            mv += 1
 
-        while collected < page_size and current_index <= max_index:
-            if current_index in indexed_data:
-                data.append(indexed_data[current_index])
-                collected += 1
-            current_index += 1
+        next_index = None
+        while (mv < len(idx_dataset)):
+            value = idx_dataset.get(mv, None)
+            if value:
+                next_index = mv
+                break
+            mv += 1
 
-        return {
-            "index": index,
-            "data": data,
-            "page_size": len(data),
-            "next_index": current_index
+        hyper = {
+            'index': index,
+            'next_index': next_index,
+            'page_size': page_size,
+            'data': data
         }
+
+        return hyper
