@@ -1,0 +1,25 @@
+{
+  "name": "es6_basic",
+  "version": "1.0.0",
+  "description": "ES6 Basics project for Holberton School",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint ."
+  },
+  "keywords": [
+    "ES6",
+    "JavaScript",
+    "Holberton"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.23.0",
+    "babel-jest": "^30.0.0",
+    "eslint": "^8.0.0",
+    "jest": "^30.0.0"
+  }
+}
