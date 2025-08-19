@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "dev": "node 0-main.js",
     "test": "jest",
     "lint": "eslint ."
   },
@@ -13,7 +14,7 @@
     "JavaScript",
     "Holberton"
   ],
-  "author": "Your Name",
+  "author": "Muhannad-09",
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.23.0",
