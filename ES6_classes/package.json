@@ -1,0 +1,18 @@
+{
+  "name": "es6-classes",
+  "version": "1.0.0",
+  "description": "Holberton School ES6 Classes project",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint .",
+    "full-test": "npm run lint && npm run test"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "babel-jest": "^29.7.0",
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.23.0",
+    "eslint": "^8.57.0"
+  }
+}
