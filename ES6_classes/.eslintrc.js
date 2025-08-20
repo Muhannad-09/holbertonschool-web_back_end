@@ -3,15 +3,15 @@ module.exports = {
     browser: false,
     es2021: true,
     node: true,
-    jest: true,
+    jest: true
   },
   extends: [
-    'eslint:recommended',
+    "eslint:recommended"
   ],
   parserOptions: {
     ecmaVersion: 12,
-    sourceType: 'module',
+    sourceType: "module"
   },
   rules: {
-  },
+  }
 };
