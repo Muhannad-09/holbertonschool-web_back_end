@@ -2,8 +2,10 @@
   "name": "es6-classes",
   "version": "1.0.0",
   "description": "Holberton School ES6 Classes project",
+  "type": "module",
   "main": "index.js",
   "scripts": {
+    "dev": "node",
     "test": "jest",
     "lint": "eslint .",
     "full-test": "npm run lint && npm run test"
