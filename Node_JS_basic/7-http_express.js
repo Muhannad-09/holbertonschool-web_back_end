@@ -11,17 +11,8 @@ app.get('/', (req, res) => {
 
 app.get('/students', async (req, res) => {
   try {
-    // Capture console.log output from countStudents
-    let output = 'This is the list of our students\n';
-    const originalConsoleLog = console.log;
-    const logs = [];
-    console.log = (msg) => logs.push(msg);
-
-    await countStudents(databaseFile);
-
-    console.log = originalConsoleLog; // restore console.log
-    output += logs.join('\n');
-    res.send(output);
+    const output = await countStudents(databaseFile);
+    res.send(`This is the list of our students\n${output}`);
   } catch (err) {
     res.send(err.message);
   }

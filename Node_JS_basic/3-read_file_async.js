@@ -13,7 +13,7 @@ function countStudents(path) {
           return { firstname, lastname, age, field };
         });
 
-      console.log(`Number of students: ${students.length}`);
+      let output = `Number of students: ${students.length}\n`;
 
       const fields = {};
       students.forEach((student) => {
@@ -22,10 +22,10 @@ function countStudents(path) {
       });
 
       for (const [field, names] of Object.entries(fields)) {
-        console.log(
-          `Number of students in ${field}: ${names.length}. List: ${names.join(', ')}`
-        );
+        output += `Number of students in ${field}: ${names.length}. List: ${names.join(', ')}\n`;
       }
+
+      return output.trim();
     })
     .catch(() => {
       throw new Error('Cannot load the database');
