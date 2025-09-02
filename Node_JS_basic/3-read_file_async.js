@@ -1,35 +1,31 @@
-const fs = require('fs').promises;
+const fs = require('fs');
 
-function countStudents(path) {
-  return fs.readFile(path, 'utf8')
-    .then((data) => {
-      const lines = data.trim().split('\n');
-      const [header, ...rows] = lines;
+const countStudents = (path) => new Promise((resolve, reject) => {
+  fs.readFile(path, 'utf8', (err, data) => {
+    if (err) {
+      reject(new Error('Cannot load the database'));
+      return;
+    }
 
-      const students = rows
-        .filter((line) => line.trim() !== '')
-        .map((line) => {
-          const [firstname, lastname, age, field] = line.split(',');
-          return { firstname, lastname, age, field };
-        });
+    const arr = data.toString().split(/\r?\n/).filter((line) => line !== '');
+    arr.shift(); // remove header
 
-      let output = `Number of students: ${students.length}\n`;
+    console.log(`Number of students: ${arr.length}`);
 
-      const fields = {};
-      students.forEach((student) => {
-        if (!fields[student.field]) fields[student.field] = [];
-        fields[student.field].push(student.firstname);
-      });
-
-      for (const [field, names] of Object.entries(fields)) {
-        output += `Number of students in ${field}: ${names.length}. List: ${names.join(', ')}\n`;
-      }
-
-      return output.trim();
-    })
-    .catch(() => {
-      throw new Error('Cannot load the database');
+    const locateCS = arr.filter((line) => line.endsWith('CS')).map((line) => {
+      const CSpeeps = line.split(',');
+      return CSpeeps[0];
     });
-}
+    console.log(`Number of students in CS: ${locateCS.length}. List: ${locateCS.join(', ')}`);
+
+    const locateSWE = arr.filter((line) => line.endsWith('SWE')).map((line) => {
+      const SWEpeeps = line.split(',');
+      return SWEpeeps[0];
+    });
+    console.log(`Number of students in SWE: ${locateSWE.length}. List: ${locateSWE.join(', ')}`);
+
+    resolve();
+  });
+});
 
 module.exports = countStudents;
