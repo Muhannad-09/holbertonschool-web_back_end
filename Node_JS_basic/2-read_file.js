@@ -1,32 +1,31 @@
 const fs = require('fs');
 
-function countStudents(path) {
-  try {
-    const data = fs.readFileSync(path, 'utf-8').trim();
-    const lines = data.split('\n').filter((line) => line.trim() !== '');
-    lines.shift(); // remove header
-
-    console.log(`Number of students: ${lines.length}`);
-
-    const fields = {};
-    lines.forEach((line) => {
-      const details = line.split(',');
-      const firstname = details[0];
-      const field = details[3];
-      if (!fields[field]) {
-        fields[field] = [];
-      }
-      fields[field].push(firstname);
-    });
-
-    for (const [field, students] of Object.entries(fields)) {
-      console.log(
-        `Number of students in ${field}: ${students.length}. List: ${students.join(', ')}`
-      );
-    }
-  } catch (err) {
+const countStudents = (path) => {
+  if (!fs.existsSync(path)) {
     throw new Error('Cannot load the database');
   }
-}
-
+  const FileContents = fs.readFileSync(path, 'utf8');
+  let arr = FileContents.toString().split(/\r?\n/);
+  arr = arr.filter((line) => line !== '');
+  arr.shift();
+  console.log(`Number of students: ${arr.length}`);
+  const locateCS = arr.filter((line) => line.endsWith('CS')).map((line) => {
+    const CSpeeps = line.split(',');
+    return CSpeeps[0];
+  });
+  console.log(`Number of students in CS: ${locateCS.length}. List: ${locateCS.join(', ')}`);
+  const locateSWE = arr.filter((line) => line.endsWith('SWE')).map((line) => {
+    const SWEpeeps = line.split(',');
+    return SWEpeeps[0];
+  });
+  console.log(`Number of students in SWE: ${locateSWE.length}. List: ${locateSWE.join(', ')}`);
+};
 module.exports = countStudents;
+// line 3: separated into sections from task reqs
+// line 8: split the array into indiv lines
+// line 10: remove first element in the array and return it
+
+// Resources
+// freecodecamp.org/news/javascript-split-how-to-split-a-string-into-an-array-in-js
+// youtube.com/watch?v=4_iT6EGkQfk
+// blog.kevinchisholm.com/javascript/array-prototype/shift
