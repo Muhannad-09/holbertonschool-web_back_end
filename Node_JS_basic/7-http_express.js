@@ -8,14 +8,19 @@ app.get('/', (req, res) => {
   res.send('Hello Holberton School!');
 });
 
-app.get('/students', (req, res) => {
-  res.write('This is the list of our students\n');
-  const db = process.argv[2];
-
-  countStudents(db)
-    .then(() => res.end())
-    .catch((err) => res.end(err.message));
+app.get('/students', async (req, res) => {
+  await countStudents(process.argv[2])
+    .then((val) => {
+      res.write('This is the list of our students\n');
+      res.write(`Number of students: ${val.arr.length}\n`);
+      res.write(`Number of students in CS: ${val.locateCS.length}. List: ${val.locateCS.join(', ')}\n`);
+      res.write(`Number of students in SWE: ${val.locateSWE.length}. List: ${val.locateSWE.join(', ')}\n`);
+      res.end();
+    })
+    .catch((err) => {
+      res.write('This is the list of our students\n');
+      res.end(err.message);
+    });
 });
-
 app.listen(port);
 module.exports = app;
