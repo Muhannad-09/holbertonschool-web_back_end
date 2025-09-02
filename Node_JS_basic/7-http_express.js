@@ -11,6 +11,7 @@ app.get('/', (req, res) => {
 app.get('/students', (req, res) => {
   res.write('This is the list of our students\n');
   const db = process.argv[2];
+
   countStudents(db)
     .then(() => res.end())
     .catch((err) => res.end(err.message));
