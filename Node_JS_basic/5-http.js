@@ -1,29 +1,25 @@
 const http = require('http');
 const countStudents = require('./3-read_file_async');
 
-const databaseFile = process.argv[2]; // database.csv passed as argument
+const port = 1245;
 
 const app = http.createServer((req, res) => {
-  res.setHeader('Content-Type', 'text/plain');
-
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
   if (req.url === '/') {
     res.end('Hello Holberton School!');
   } else if (req.url === '/students') {
     res.write('This is the list of our students\n');
-    countStudents(databaseFile)
+    const db = process.argv[2];
+    countStudents(db)
       .then(() => res.end())
       .catch((err) => {
-        res.end(err.message);
+        res.end(err.toString());
       });
   } else {
-    res.statusCode = 404;
-    res.end('Not Found');
+    res.end('Hello Holberton School!');
   }
 });
 
-app.listen(1245, () => {
-  // eslint-disable-next-line no-console
-  console.log('Server running on port 1245');
-});
+app.listen(port);
 
 module.exports = app;
