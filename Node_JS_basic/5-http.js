@@ -1,36 +1,64 @@
 const http = require('http');
+const fs = require('fs').promises;
 
-const args = process.argv.slice(2);
-const countStudents = require('./3-read_file_async');
+const database = process.argv[2];
 
-const DATABASE = args[0];
+/**
+ * Helper function to count students asynchronously and return a string
+ */
+function getStudentsInfo(path) {
+  return fs.readFile(path, 'utf8')
+    .then((content) => {
+      const lines = content
+        .split('\n')
+        .filter((line) => line.trim() !== '');
+      const rows = lines.slice(1); // skip header
 
-const hostname = '127.0.0.1';
-const port = 1245;
+      let output = `Number of students: ${rows.length}\n`;
 
-const app = http.createServer(async (req, res) => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
+      const byField = {};
 
-  const { url } = req;
+      rows.forEach((row) => {
+        const cols = row.split(',');
+        if (cols.length >= 4) {
+          const firstName = cols[0].trim();
+          const field = cols[3].trim();
+          if (!byField[field]) byField[field] = [];
+          byField[field].push(firstName);
+        }
+      });
 
-  if (url === '/') {
-    res.write('Hello Holberton School!');
-  } else if (url === '/students') {
+      Object.keys(byField).sort().forEach((field) => {
+        output += `Number of students in ${field}: ${byField[field].length}. List: ${byField[field].join(', ')}\n`;
+      });
+
+      return output;
+    })
+    .catch(() => {
+      throw new Error('Cannot load the database');
+    });
+}
+
+const app = http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+
+  if (req.url === '/') {
+    res.end('Hello Holberton School!');
+  } else if (req.url === '/students') {
     res.write('This is the list of our students\n');
-    try {
-      const students = await countStudents(DATABASE);
-      res.end(`${students.join('\n')}`);
-    } catch (error) {
-      res.end(error.message);
-    }
+    getStudentsInfo(database)
+      .then((info) => {
+        res.end(info);
+      })
+      .catch((err) => {
+        res.end(err.message);
+      });
+  } else {
+    res.statusCode = 404;
+    res.end('Not found');
   }
-  res.statusCode = 404;
-  res.end();
 });
 
-app.listen(port, hostname, () => {
-  //   console.log(`Server running at http://${hostname}:${port}/`);
-});
+app.listen(1245);
 
 module.exports = app;
